@@ -1,5 +1,9 @@
 .App {
+  display: flex;
+  flex-direction: column;
   text-align: center;
+  background-color: #fff !important;
+  width: 100%;
 }
 
 .App-logo {

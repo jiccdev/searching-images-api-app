@@ -1,25 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from 'react';
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
 
-function App() {
+import Container from './components/Container';
+import Item from './components/Item';
+import './header.css';
+
+const SearchBarSchema = Yup.object().shape({
+  search: Yup.string().required('Required'),
+});
+
+const App = () => {
+  const [photos, setPhotos] = useState([]);
+
+  console.log({ photos });
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <header>
+        <Formik
+          initialValues={{
+            search: '',
+          }}
+          validationSchema={SearchBarSchema}
+          onSubmit={async (values) => {
+            const url = `https://api.unsplash.com/search/photos?per_page=20&query=${values.search}`;
+            const res = await fetch(url, {
+              headers: {
+                Authorization:
+                  'Client-ID Vq2xG7ahfahv-OlBzI6OOMKAsGguIJApF0ogSWWlh0k',
+              },
+            });
+            const data = await res.json();
+            console.log(values);
+            setPhotos(data.results);
+          }}
         >
-          Learn React
-        </a>
+          <Form>
+            <Field name="search" />
+          </Form>
+        </Formik>
       </header>
+      <Container>
+        {photos.map((item) => (
+          <Item key={item.id} item={item} />
+        ))}
+      </Container>
     </div>
   );
-}
+};
 
 export default App;
